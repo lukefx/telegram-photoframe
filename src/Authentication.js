@@ -1,17 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
-import QRCode from 'qrcode'
+import QRCodeStyling from 'qr-code-styling'
+import logo from './logo.png'
 
 const Container = styled.div({
   display: 'grid',
   placeItems: 'center'
 })
 
-function Authentication ({ type, event, client }) {
+export default function Authentication ({ event, client }) {
   const qr = React.useRef()
 
   React.useEffect(() => {
     async function handleAuhentication () {
+      const type = event['authorization_state']['@type']
       switch (type) {
         case 'authorizationStateWaitEncryptionKey':
           await client.current.send({
@@ -26,28 +28,49 @@ function Authentication ({ type, event, client }) {
           })
           break
         case 'authorizationStateWaitOtherDeviceConfirmation':
-          QRCode.toCanvas(qr.current, event.authorization_state.link)
+          console.log('Updating QR')
+          const qrCode = new QRCodeStyling({
+            width: 400,
+            height: 400,
+            data: event.authorization_state.link,
+            image: logo,
+            dotsOptions: {
+              color: '#25abec',
+              type: 'square'
+            },
+            backgroundOptions: {
+              color: 'transparent'
+            },
+            imageOptions: {
+              crossOrigin: 'anonymous',
+              margin: 20
+            }
+          })
+
+          qr.current.innerHTML = ''
+          qrCode.append(qr.current)
+
           break
         default:
           break
       }
     }
 
-    if (client.current) {
+    if (client.current && event?.authorization_state) {
       handleAuhentication()
     }
-  }, [client, type])
+  }, [client, event])
 
   return (
     <Container>
       <h1>Login with your device</h1>
-      <canvas ref={qr}></canvas>
+      <div ref={qr}></div>
     </Container>
   )
 }
 
-function areEqual (prevProps, nextProps) {
-  return prevProps['type'] === nextProps['type']
-}
+// function areEqual (prevProps, nextProps) {
+//   return prevProps['type'] === nextProps['type']
+// }
 
-export default React.memo(Authentication, areEqual)
+// export default React.memo(Authentication, areEqual)

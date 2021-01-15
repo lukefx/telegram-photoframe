@@ -1,33 +1,20 @@
 import React from 'react'
-import localforage from 'localforage'
+import Dexie from 'dexie'
 
 const StorageContext = React.createContext()
 
 function StorageProvider (props) {
-  const [messagesStorage, setMessagesStorage] = React.useState()
-  const [mediaStorage, setMediaStorage] = React.useState()
+  const [db, setDb] = React.useState()
 
   React.useEffect(() => {
     console.log('Initialize IndexedDB')
-
-    const messages = localforage.createInstance({
-      name: 'messages'
-    })
-
-    const media = localforage.createInstance({
-      name: 'media'
-    })
-
-    setMessagesStorage(messages)
-    setMediaStorage(media)
+    const db = new Dexie('MessagesDatabase')
+    db.version(1).stores({ messages: 'message_id, media_id, received_at' })
+    db.open()
+    setDb(db)
   }, [])
 
-  return (
-    <StorageContext.Provider
-      value={{ messagesStorage, mediaStorage }}
-      {...props}
-    />
-  )
+  return <StorageContext.Provider value={{ db }} {...props} />
 }
 
 function useStorage () {

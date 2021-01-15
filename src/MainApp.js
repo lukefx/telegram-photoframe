@@ -4,7 +4,7 @@ import Slideshow from './Slideshow'
 import { useStorage } from './Storage'
 
 export default function MainApp ({ updates, client }) {
-  const { messagesStorage, mediaStorage } = useStorage()
+  const { db } = useStorage()
   const [photoIds, setPhotoIds] = React.useState()
 
   const chatId = -440888561
@@ -14,11 +14,18 @@ export default function MainApp ({ updates, client }) {
       // We can have a new message or one could be deleted
       switch (updates['@type']) {
         case 'updateNewMessage':
+          if (updates?.message?.content?.['@type'] !== 'messagePhoto') {
+            return
+          }
+
           // download new image, save and cache it
           if (updates?.message?.chat_id === chatId) {
             const photoSize = last(updates.message.content.photo.sizes)
             const photoId = photoSize.photo.id
-            const picture = await mediaStorage.getItem(String(photoId))
+            const picture = await db.messages
+              .where('media_id')
+              .equals(photoId)
+              .first()
 
             // picture is not cached already
             if (!picture) {
@@ -36,12 +43,20 @@ export default function MainApp ({ updates, client }) {
                 file_id: photoId
               })
 
-              await messagesStorage.setItem(
-                String(updates?.message.id),
-                photoId
-              )
-              await mediaStorage.setItem(String(photoId), localFile.data)
-              setPhotoIds(await mediaStorage.keys())
+              await db.messages.add({
+                message_id: String(updates?.message.id),
+                media_id: String(photoId),
+                data: localFile.data
+              })
+
+              await db.messages.put({
+                message_id: String(updates?.message.id),
+                media_id: String(photoId),
+                received_at: updates?.message.date,
+                data: localFile.data
+              })
+
+              setPhotoIds(await db.messages.orderBy('received_at').toArray())
             }
           }
 
@@ -50,12 +65,11 @@ export default function MainApp ({ updates, client }) {
           // delete the image from the cache
           if (updates.chat_id === chatId) {
             updates.message_ids.forEach(async messageId => {
-              const photoId = await messagesStorage.getItem(String(messageId))
-              if (await mediaStorage.getItem(String(photoId))) {
-                await messagesStorage.removeItem(String(messageId))
-                await mediaStorage.removeItem(String(photoId))
-                setPhotoIds(await mediaStorage.keys())
-              }
+              await db.messages
+                .where('message_id')
+                .equals(String(messageId))
+                .delete()
+              setPhotoIds(await db.messages.orderBy('received_at').toArray())
             })
           }
 
@@ -72,6 +86,7 @@ export default function MainApp ({ updates, client }) {
 
   React.useEffect(() => {
     async function fetchHistory () {
+      console.log('Fetching history for:', chatId)
       await client.current.send({
         '@type': 'getChats',
         chat_list: { '@type': 'chatListMain' },
@@ -102,10 +117,14 @@ export default function MainApp ({ updates, client }) {
       search?.messages.forEach(async message => {
         const biggestPhoto = last(message.content.photo.sizes)
         const photoId = biggestPhoto.photo.id
-        const picture = await mediaStorage.getItem(String(photoId))
+
+        const storedMessage = await db.messages
+          .where('message_id')
+          .equals(String(message.id))
+          .first()
 
         // picture is not cached already
-        if (!picture) {
+        if (!storedMessage) {
           // downloading the file
           await client.current.send({
             '@type': 'downloadFile',
@@ -120,9 +139,14 @@ export default function MainApp ({ updates, client }) {
             file_id: photoId
           })
 
-          await messagesStorage.setItem(String(message.id), String(photoId))
-          await mediaStorage.setItem(String(photoId), localFile.data)
-          setPhotoIds(await mediaStorage.keys())
+          await db.messages.put({
+            message_id: String(message.id),
+            media_id: String(photoId),
+            received_at: message.date,
+            data: localFile.data
+          })
+
+          setPhotoIds(await db.messages.orderBy('received_at').toArray())
         }
       })
     }
@@ -130,5 +154,5 @@ export default function MainApp ({ updates, client }) {
     fetchHistory()
   }, [])
 
-  return <Slideshow photoIds={photoIds} />
+  return <Slideshow client={client} photoIds={photoIds} />
 }

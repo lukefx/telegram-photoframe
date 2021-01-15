@@ -16,7 +16,7 @@ function App () {
       verbosity: 3,
       jsVerbosity: 3,
       fastUpdating: true,
-      useDatabase: true,
+      useDatabase: false,
       mode: 'wasm'
     })
   }, [])
@@ -49,7 +49,7 @@ function App () {
         device_model: 'Telegram Frame',
         application_version: '0.1',
         use_secret_chats: false,
-        use_message_database: true,
+        use_message_database: false,
         use_file_database: false,
         files_directory: '/'
       }
@@ -64,7 +64,7 @@ function App () {
       case 'authorizationStateWaitPhoneNumber':
       case 'updateAuthorizationState':
       case 'authorizationStateClosed':
-        return <Authentication type={type} event={event} client={client} />
+        return <Authentication event={event} client={client} />
       case 'authorizationStateReady':
         return <MainApp updates={updates} client={client} />
       default:
