@@ -3,6 +3,9 @@ import TdClient from 'tdweb'
 import Authentication from './Authentication'
 import MainApp from './MainApp'
 
+import '@fontsource/roboto'
+import './App.css'
+
 function App () {
   const [event, setEvent] = React.useState()
   const [updates, setUpdates] = React.useState()

@@ -28,7 +28,6 @@ export default function Authentication ({ event, client }) {
           })
           break
         case 'authorizationStateWaitOtherDeviceConfirmation':
-          console.log('Updating QR')
           const qrCode = new QRCodeStyling({
             width: 400,
             height: 400,

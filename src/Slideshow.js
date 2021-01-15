@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components/macro'
-import { useStorage } from './Storage'
+import { last } from 'lodash'
+import ReactionButton from './ReactionButton'
 
 const Picture = styled.div(({ blob }) => ({
   width: '100%',
@@ -11,87 +12,73 @@ const Picture = styled.div(({ blob }) => ({
   backgroundSize: 'cover'
 }))
 
+const Caption = styled.div({
+  position: 'relative',
+  top: -60,
+  left: '2%',
+  color: 'white',
+  fontSize: '2rem'
+})
+
 const Reactions = styled.div({
   position: 'relative',
-  top: -100,
+  top: -120,
   left: '85%',
   display: 'flex',
   flexDirection: 'row'
 })
 
-const ReactionButton = styled.button({
-  padding: 10,
-  border: 'none',
-  font: 'inherit',
-  color: 'inherit',
-  backgroundColor: 'light-grey',
-  borderRadius: '50%',
-  height: 50,
-  width: 50,
-  fontSize: '1.5rem',
-  margin: 5
-})
-
-export default function Slideshow ({ client, photoIds }) {
-  const { db } = useStorage()
+export default function Slideshow ({ client, history }) {
   const [id, setId] = React.useState()
   const [photo, setPhoto] = React.useState([])
-
-  console.log('*** Rendering Slideshow')
-
-  React.useEffect(() => {
-    db.messages
-      .orderBy('received_at')
-      .desc()
-      .first()
-      .then(message => {
-        const src = URL.createObjectURL(message.data)
-        setId(message.message_id)
-        setPhoto(src)
-      })
-  }, [])
+  const [caption, setCaption] = React.useState('')
 
   React.useEffect(() => {
-    async function displayPhoto () {
-      const message = await db.messages
-        .orderBy('received_at')
-        .desc()
-        .first()
+    async function getLastMessage () {
+      // Getting last message
+      const message = last(history)
 
-      const src = URL.createObjectURL(message.data)
-      setId(message.message_id)
-      setPhoto(src)
-    }
+      if (message?.content?.['@type'] === 'messagePhoto') {
+        const { caption, photo } = message.content
+        const photoSize = last(photo.sizes)
+        const fileId = photoSize.photo.id
 
-    if (photoIds) {
-      displayPhoto()
-    }
-  }, [photoIds])
+        // downloading the file
+        await client.current.send({
+          '@type': 'downloadFile',
+          file_id: fileId,
+          priority: 1,
+          synchronous: true
+        })
 
-  function sendReaction (event, emoji) {
-    client.current.send({
-      '@type': 'sendMessage',
-      chat_id: -440888561,
-      reply_to_message_id: 0,
-      input_message_content: {
-        '@type': 'inputMessageText',
-        text: {
-          '@type': 'formattedText',
-          text: emoji,
-          entities: []
-        }
+        // Read the data from local tdlib to blob
+        const localFile = await client.current.send({
+          '@type': 'readFile',
+          file_id: fileId
+        })
+
+        const src = URL.createObjectURL(localFile.data)
+
+        setId(fileId)
+        setPhoto(src) // photo blob
+        setCaption(caption?.text)
       }
-    })
-  }
+    }
+
+    if (history) {
+      getLastMessage()
+    }
+  }, [history])
 
   return (
     <React.Fragment>
-      <Picture data-testis={id} blob={photo} onto />
+      <Picture data-testis={id} blob={photo} />
+      <Caption>{caption}</Caption>
       <Reactions>
-        <ReactionButton onClick={event => sendReaction(event, '♥️')}>
+        <ReactionButton client={client} text='♥️'>
           ♥️
         </ReactionButton>
-        <ReactionButton onClick={event => sendReaction(event, '🥰')}>
+        <ReactionButton client={client} text='🥰'>
           🥰
         </ReactionButton>
       </Reactions>

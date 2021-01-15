@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ChatSelection ({ event, client }) {
+export default function ChatSelection ({ client, callback }) {
   const [chats, setChats] = React.useState([])
 
   React.useEffect(() => {
@@ -23,14 +23,16 @@ export default function ChatSelection ({ event, client }) {
     }
 
     getChats()
-  }, [])
+  }, [client])
 
   return (
     <div>
-      <h1>Main app window</h1>
+      <div>Select a chat to display</div>
       <ul>
         {chats.map(chat => (
-          <li key={chat.id}>{chat.title}</li>
+          <li key={chat.id} onClick={event => callback(chat.id)}>
+            {chat.title}
+          </li>
         ))}
       </ul>
     </div>
