@@ -1,30 +1,30 @@
 {
   "files": {
-    "main.css": "/telegram-photoframe/static/css/main.24a2e88e.chunk.css",
-    "main.js": "/telegram-photoframe/static/js/main.044fc750.chunk.js",
-    "main.js.map": "/telegram-photoframe/static/js/main.044fc750.chunk.js.map",
-    "runtime-main.js": "/telegram-photoframe/static/js/runtime-main.89e09c7c.js",
-    "runtime-main.js.map": "/telegram-photoframe/static/js/runtime-main.89e09c7c.js.map",
-    "static/css/2.2060f556.chunk.css": "/telegram-photoframe/static/css/2.2060f556.chunk.css",
-    "static/js/2.86f36454.chunk.js": "/telegram-photoframe/static/js/2.86f36454.chunk.js",
-    "static/js/2.86f36454.chunk.js.map": "/telegram-photoframe/static/js/2.86f36454.chunk.js.map",
-    "static/js/3.45795e17.chunk.js": "/telegram-photoframe/static/js/3.45795e17.chunk.js",
-    "static/js/3.45795e17.chunk.js.map": "/telegram-photoframe/static/js/3.45795e17.chunk.js.map",
-    "static/js/4.b8a8a19f.chunk.js": "/telegram-photoframe/static/js/4.b8a8a19f.chunk.js",
-    "static/js/4.b8a8a19f.chunk.js.map": "/telegram-photoframe/static/js/4.b8a8a19f.chunk.js.map",
-    "index.html": "/telegram-photoframe/index.html",
-    "static/css/2.2060f556.chunk.css.map": "/telegram-photoframe/static/css/2.2060f556.chunk.css.map",
-    "static/css/main.24a2e88e.chunk.css.map": "/telegram-photoframe/static/css/main.24a2e88e.chunk.css.map",
-    "static/js/2.86f36454.chunk.js.LICENSE.txt": "/telegram-photoframe/static/js/2.86f36454.chunk.js.LICENSE.txt",
-    "static/js/3.45795e17.chunk.js.LICENSE.txt": "/telegram-photoframe/static/js/3.45795e17.chunk.js.LICENSE.txt",
-    "static/media/logo.eea735da.png": "/telegram-photoframe/static/media/logo.eea735da.png",
-    "static/media/index.css": "/telegram-photoframe/static/media/roboto-vietnamese-400-normal.52cebac0.woff2"
+    "main.css": "/static/css/main.24a2e88e.chunk.css",
+    "main.js": "/static/js/main.6376e173.chunk.js",
+    "main.js.map": "/static/js/main.6376e173.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.1a1585fa.js",
+    "runtime-main.js.map": "/static/js/runtime-main.1a1585fa.js.map",
+    "static/css/2.4ba0d58d.chunk.css": "/static/css/2.4ba0d58d.chunk.css",
+    "static/js/2.d58ba73c.chunk.js": "/static/js/2.d58ba73c.chunk.js",
+    "static/js/2.d58ba73c.chunk.js.map": "/static/js/2.d58ba73c.chunk.js.map",
+    "static/js/3.45795e17.chunk.js": "/static/js/3.45795e17.chunk.js",
+    "static/js/3.45795e17.chunk.js.map": "/static/js/3.45795e17.chunk.js.map",
+    "static/js/4.b8a8a19f.chunk.js": "/static/js/4.b8a8a19f.chunk.js",
+    "static/js/4.b8a8a19f.chunk.js.map": "/static/js/4.b8a8a19f.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/2.4ba0d58d.chunk.css.map": "/static/css/2.4ba0d58d.chunk.css.map",
+    "static/css/main.24a2e88e.chunk.css.map": "/static/css/main.24a2e88e.chunk.css.map",
+    "static/js/2.d58ba73c.chunk.js.LICENSE.txt": "/static/js/2.d58ba73c.chunk.js.LICENSE.txt",
+    "static/js/3.45795e17.chunk.js.LICENSE.txt": "/static/js/3.45795e17.chunk.js.LICENSE.txt",
+    "static/media/logo.eea735da.png": "/static/media/logo.eea735da.png",
+    "static/media/index.css": "/static/media/roboto-vietnamese-400-normal.52cebac0.woff2"
   },
   "entrypoints": [
-    "static/js/runtime-main.89e09c7c.js",
-    "static/css/2.2060f556.chunk.css",
-    "static/js/2.86f36454.chunk.js",
+    "static/js/runtime-main.1a1585fa.js",
+    "static/css/2.4ba0d58d.chunk.css",
+    "static/js/2.d58ba73c.chunk.js",
     "static/css/main.24a2e88e.chunk.css",
-    "static/js/main.044fc750.chunk.js"
+    "static/js/main.6376e173.chunk.js"
   ]
 }
