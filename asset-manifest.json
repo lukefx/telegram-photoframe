@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "https://lukefx.github.io/telegram-photoframe/static/css/main.24a2e88e.chunk.css",
-    "main.js": "https://lukefx.github.io/telegram-photoframe/static/js/main.e73164f0.chunk.js",
-    "main.js.map": "https://lukefx.github.io/telegram-photoframe/static/js/main.e73164f0.chunk.js.map",
+    "main.js": "https://lukefx.github.io/telegram-photoframe/static/js/main.73640a87.chunk.js",
+    "main.js.map": "https://lukefx.github.io/telegram-photoframe/static/js/main.73640a87.chunk.js.map",
     "runtime-main.js": "https://lukefx.github.io/telegram-photoframe/static/js/runtime-main.476ec82e.js",
     "runtime-main.js.map": "https://lukefx.github.io/telegram-photoframe/static/js/runtime-main.476ec82e.js.map",
     "static/css/2.cf80976b.chunk.css": "https://lukefx.github.io/telegram-photoframe/static/css/2.cf80976b.chunk.css",
-    "static/js/2.a25fc155.chunk.js": "https://lukefx.github.io/telegram-photoframe/static/js/2.a25fc155.chunk.js",
-    "static/js/2.a25fc155.chunk.js.map": "https://lukefx.github.io/telegram-photoframe/static/js/2.a25fc155.chunk.js.map",
+    "static/js/2.487b677b.chunk.js": "https://lukefx.github.io/telegram-photoframe/static/js/2.487b677b.chunk.js",
+    "static/js/2.487b677b.chunk.js.map": "https://lukefx.github.io/telegram-photoframe/static/js/2.487b677b.chunk.js.map",
     "static/js/3.a22e709b.chunk.js": "https://lukefx.github.io/telegram-photoframe/static/js/3.a22e709b.chunk.js",
     "static/js/3.a22e709b.chunk.js.map": "https://lukefx.github.io/telegram-photoframe/static/js/3.a22e709b.chunk.js.map",
     "static/js/4.a5af80e4.chunk.js": "https://lukefx.github.io/telegram-photoframe/static/js/4.a5af80e4.chunk.js",
@@ -15,16 +15,16 @@
     "index.html": "https://lukefx.github.io/telegram-photoframe/index.html",
     "static/css/2.cf80976b.chunk.css.map": "https://lukefx.github.io/telegram-photoframe/static/css/2.cf80976b.chunk.css.map",
     "static/css/main.24a2e88e.chunk.css.map": "https://lukefx.github.io/telegram-photoframe/static/css/main.24a2e88e.chunk.css.map",
-    "static/js/2.a25fc155.chunk.js.LICENSE.txt": "https://lukefx.github.io/telegram-photoframe/static/js/2.a25fc155.chunk.js.LICENSE.txt",
+    "static/js/2.487b677b.chunk.js.LICENSE.txt": "https://lukefx.github.io/telegram-photoframe/static/js/2.487b677b.chunk.js.LICENSE.txt",
     "static/js/3.a22e709b.chunk.js.LICENSE.txt": "https://lukefx.github.io/telegram-photoframe/static/js/3.a22e709b.chunk.js.LICENSE.txt",
-    "static/media/logo.eea735da.png": "https://lukefx.github.io/telegram-photoframe/static/media/logo.eea735da.png",
-    "static/media/index.css": "https://lukefx.github.io/telegram-photoframe/static/media/roboto-vietnamese-400-normal.52cebac0.woff2"
+    "static/media/index.css": "https://lukefx.github.io/telegram-photoframe/static/media/roboto-vietnamese-400-normal.52cebac0.woff2",
+    "static/media/tg_logo.eea735da.png": "https://lukefx.github.io/telegram-photoframe/static/media/tg_logo.eea735da.png"
   },
   "entrypoints": [
     "static/js/runtime-main.476ec82e.js",
     "static/css/2.cf80976b.chunk.css",
-    "static/js/2.a25fc155.chunk.js",
+    "static/js/2.487b677b.chunk.js",
     "static/css/main.24a2e88e.chunk.css",
-    "static/js/main.e73164f0.chunk.js"
+    "static/js/main.73640a87.chunk.js"
   ]
 }
