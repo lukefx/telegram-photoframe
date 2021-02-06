@@ -1,6 +1,6 @@
-import React from 'react'
 import styled from 'styled-components'
 import useSound from 'use-sound'
+import { useTdlib } from './Tdlib'
 
 const Button = styled.button({
   padding: 10,
@@ -16,23 +16,12 @@ const Button = styled.button({
 })
 
 export default function ReactionButton ({ client, text, children }) {
+  const { chatId, sendTextMessage } = useTdlib()
   const [playActive] = useSound('/pop-down.mp3', { volume: 0.25 })
   const [playOn] = useSound('/pop-up-on.mp3', { volume: 0.25 })
 
   function sendReaction (text) {
-    client.current.send({
-      '@type': 'sendMessage',
-      chat_id: -440888561,
-      reply_to_message_id: 0,
-      input_message_content: {
-        '@type': 'inputMessageText',
-        text: {
-          '@type': 'formattedText',
-          text,
-          entities: []
-        }
-      }
-    })
+    sendTextMessage(chatId, text)
   }
 
   function onClick (event) {

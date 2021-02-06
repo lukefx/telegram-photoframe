@@ -1,12 +1,15 @@
-import React from 'react'
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { TelegramProvider } from './Tdlib'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <StrictMode>
+    <TelegramProvider>
+      <App />
+    </TelegramProvider>
+  </StrictMode>,
   document.getElementById('root')
 )
 

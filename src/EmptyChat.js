@@ -1,5 +1,8 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
+import { useTdlib } from './Tdlib'
+import RemoteFile from './RemoteFile'
+import { RoundChatPicture } from './RoundChatPicture'
 
 const Container = styled.div({
   display: 'grid',
@@ -7,67 +10,44 @@ const Container = styled.div({
   height: '100vh'
 })
 
-const ChatPicture = styled.div(({ src }) => ({
-  height: 400,
-  width: 400,
-  borderRadius: '50%',
-  backgroundImage: `url(${src})`,
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat',
-  backgroundSize: 'cover'
-}))
-
 const Message = styled.div({
   fontSize: '2rem'
 })
 
-export default function EmptyChat ({ client, chatId }) {
-  const [title, setTitle] = React.useState(null)
-  const [chatPhoto, setChatPhoto] = React.useState(null)
+export default function EmptyChat () {
+  const { client, chatId, getChat, getChatHistory } = useTdlib()
+  const [title, setTitle] = useState(null)
+  const [fileId, setFileId] = useState()
 
-  React.useEffect(() => {
-    async function getChat () {
-      await client.current.send({
-        '@type': 'getChats',
-        chat_list: { '@type': 'chatListMain' },
-        offset_order: '9223372036854775807',
-        offset_chat_id: chatId,
-        limit: 1
-      })
+  useEffect(() => {
+    if (chatId && getChatHistory) {
+      getChatHistory(chatId)
+    }
+  }, [chatId, getChatHistory])
 
-      const chat = await client.current.send({
-        '@type': 'getChat',
-        chat_id: chatId
-      })
+  useEffect(() => {
+    let isSubscribed = true
 
-      const fileId = chat.photo.big.id
+    async function getChatInfo () {
+      const chat = await getChat(chatId)
+      const fileId = chat?.photo?.big?.id
 
-      // downloading the file
-      await client.current.send({
-        '@type': 'downloadFile',
-        file_id: fileId,
-        priority: 1,
-        synchronous: true
-      })
-
-      // Read the data from local tdlib to blob
-      const localFile = await client.current.send({
-        '@type': 'readFile',
-        file_id: fileId
-      })
-
-      const src = URL.createObjectURL(localFile.data)
-
-      setChatPhoto(src)
-      setTitle(chat.title)
+      if (isSubscribed) {
+        setTitle(chat.title)
+        setFileId(fileId)
+      }
     }
 
-    getChat()
-  }, [client, chatId])
+    getChatInfo()
+    return () => (isSubscribed = false)
+  }, [client, chatId, getChat])
 
   return (
     <Container>
-      <ChatPicture src={chatPhoto} />
+      <RemoteFile
+        fileId={fileId}
+        render={props => <RoundChatPicture size={400} src={props.blob} />}
+      />
       <Message>Send a picture to '{title}' to view it here</Message>
     </Container>
   )

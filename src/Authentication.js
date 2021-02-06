@@ -1,28 +1,35 @@
-import React from 'react'
+import { useRef, useEffect } from 'react'
 import styled from 'styled-components'
+import { useTdlib } from './Tdlib'
 import QRCodeStyling from 'qr-code-styling'
-import logo from './logo.png'
+import tg_logo from './assets/tg_logo.png'
 
 const Container = styled.div({
   display: 'grid',
-  placeItems: 'center'
+  placeItems: 'center',
+  height: 600,
+  backgroundColor: 'rgba(238, 243, 246, 0.8)'
 })
 
-export default function Authentication ({ event, client }) {
-  const qr = React.useRef()
+export default function Authentication ({ event }) {
+  const { client } = useTdlib()
+  const qr = useRef()
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function handleAuhentication () {
       const type = event['authorization_state']['@type']
       switch (type) {
+        case 'authorizationStateClosed':
+          await client.send({ '@type': 'destroy' })
+          window.location.reload() // a kind of a 'hack' but it works...
+          break
         case 'authorizationStateWaitEncryptionKey':
-          await client.current.send({
+          await client.send({
             '@type': 'checkDatabaseEncryptionKey'
           })
           break
-        case 'authorizationStateClosed':
         case 'authorizationStateWaitPhoneNumber':
-          await client.current.send({
+          await client.send({
             '@type': 'requestQrCodeAuthentication',
             other_user_ids: []
           })
@@ -32,7 +39,7 @@ export default function Authentication ({ event, client }) {
             width: 400,
             height: 400,
             data: event.authorization_state.link,
-            image: logo,
+            image: tg_logo,
             dotsOptions: {
               color: '#25abec',
               type: 'square'
@@ -55,7 +62,7 @@ export default function Authentication ({ event, client }) {
       }
     }
 
-    if (client.current && event?.authorization_state) {
+    if (client && event?.authorization_state) {
       handleAuhentication()
     }
   }, [client, event])
@@ -67,9 +74,3 @@ export default function Authentication ({ event, client }) {
     </Container>
   )
 }
-
-// function areEqual (prevProps, nextProps) {
-//   return prevProps['type'] === nextProps['type']
-// }
-
-// export default React.memo(Authentication, areEqual)

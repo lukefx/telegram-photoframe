@@ -1,10 +1,19 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
-import { last } from 'lodash'
+import { useTdlib } from './Tdlib'
+import { last, isEmpty } from 'lodash'
+import Loading from './Loading'
 import ReactionButton from './ReactionButton'
 
+const Container = styled.div({
+  overflow: 'hidden',
+  height: 600,
+  width: 1024,
+  cursor: 'none'
+})
+
 const Picture = styled.div(({ blob }) => ({
-  width: '100%',
+  // width: '100%',
   height: 600,
   backgroundImage: `url(${blob})`,
   backgroundPosition: 'center',
@@ -22,57 +31,65 @@ const Caption = styled.div({
 
 const Reactions = styled.div({
   position: 'relative',
-  top: -120,
+  top: '-15%',
   left: '85%',
   display: 'flex',
   flexDirection: 'row'
 })
 
-export default function Slideshow ({ client, history }) {
-  const [id, setId] = React.useState()
-  const [photo, setPhoto] = React.useState([])
-  const [caption, setCaption] = React.useState('')
+export default function Slideshow () {
+  const { client, chatId, history, getChatHistory, downloadFile } = useTdlib()
+  const [loading, setLoading] = useState(true)
+  const [media, setMedia] = useState()
+  const [caption, setCaption] = useState('')
 
-  React.useEffect(() => {
-    async function getLastMessage () {
-      // Getting last message
-      const message = last(history)
+  useEffect(() => {
+    async function getMediaMessage () {
+      setLoading(true)
+      // Getting last message with a Photo/Video
+      const mediaMessages = history.filter(message =>
+        ['messagePhoto', 'messageVideo'].includes(message?.content?.['@type'])
+      )
 
-      if (message?.content?.['@type'] === 'messagePhoto') {
-        const { caption, photo } = message.content
-        const photoSize = last(photo.sizes)
-        const fileId = photoSize.photo.id
-
-        // downloading the file
-        await client.current.send({
-          '@type': 'downloadFile',
-          file_id: fileId,
-          priority: 1,
-          synchronous: true
-        })
-
-        // Read the data from local tdlib to blob
-        const localFile = await client.current.send({
-          '@type': 'readFile',
-          file_id: fileId
-        })
-
-        const src = URL.createObjectURL(localFile.data)
-
-        setId(fileId)
-        setPhoto(src) // photo blob
-        setCaption(caption?.text)
+      if (isEmpty(mediaMessages)) {
+        // we don't have any media in the chat...
+        setMedia(<Loading message='No media in this chat...' />)
       }
+
+      const message = last(mediaMessages)
+      switch (message?.content?.['@type']) {
+        case 'messagePhoto':
+          const photo = message.content.photo
+          const photoSize = last(photo.sizes)
+          const photoFileId = photoSize.photo.id
+          const localPhotoFile = await downloadFile(photoFileId)
+          const photoSrc = URL.createObjectURL(localPhotoFile.data)
+          setMedia(<Picture data-testid={photoFileId} blob={photoSrc} />)
+          setCaption(message.content?.text)
+          break
+        case 'messageVideo':
+          const video = message.content.video
+          const videoId = video.video.id
+          const localVideoFile = await downloadFile(videoId)
+          const videoSrc = URL.createObjectURL(localVideoFile.data)
+          setMedia(
+            <video data-testid={videoId} src={videoSrc} controls autoPlay />
+          )
+          setCaption(message.content?.text)
+          break
+        default:
+          break
+      }
+      setLoading(false)
     }
 
-    if (history) {
-      getLastMessage()
-    }
-  }, [history])
+    getMediaMessage()
+  }, [client, history, chatId, getChatHistory, downloadFile])
 
   return (
-    <React.Fragment>
-      <Picture data-testis={id} blob={photo} />
+    <Container>
+      {loading && <Loading />}
+      {media}
       <Caption>{caption}</Caption>
       <Reactions>
         <ReactionButton client={client} text='♥️'>
@@ -82,6 +99,6 @@ export default function Slideshow ({ client, history }) {
           🥰
         </ReactionButton>
       </Reactions>
-    </React.Fragment>
+    </Container>
   )
 }
