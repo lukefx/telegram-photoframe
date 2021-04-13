@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
 import { useTdlib } from './Tdlib'
 import RemoteFile from './RemoteFile'
-import { RoundChatPicture } from './RoundChatPicture'
+import { RoundChatPicture } from './components/RoundChatPicture'
 
 const ListContainer = styled.div({
   scrollDirection: 'vertical'
@@ -23,7 +23,7 @@ const Chat = styled.li({
 })
 
 export default function ChatSelection () {
-  const { client, getChat, getChats, setChatId } = useTdlib()
+  const { client, getChat, getChats, saveChatId } = useTdlib()
   const [chats, setChats] = useState([])
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function ChatSelection () {
       <h1>Select a chat to use as Frame:</h1>
       <List>
         {chats.map(chat => (
-          <Chat key={chat.id} onClick={event => setChatId(chat.id)}>
+          <Chat key={chat.id} onClick={event => saveChatId(chat.id)}>
             <div
               style={{
                 display: 'flex',

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
 import { useTdlib } from './Tdlib'
 import RemoteFile from './RemoteFile'
-import { RoundChatPicture } from './RoundChatPicture'
+import { RoundChatPicture } from './components/RoundChatPicture'
 
 const Container = styled.div({
   display: 'grid',
@@ -15,6 +15,7 @@ const Message = styled.div({
 })
 
 export default function EmptyChat () {
+  console.log('Rendering emptyChat')
   const { client, chatId, getChat, getChatHistory } = useTdlib()
   const [title, setTitle] = useState(null)
   const [fileId, setFileId] = useState()

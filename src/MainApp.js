@@ -3,6 +3,7 @@ import { useTdlib } from './Tdlib'
 import ChatSelection from './ChatSelection'
 import EmptyChat from './EmptyChat'
 import Slideshow from './Slideshow'
+import { getMediaMessages } from './utility'
 
 export default function MainApp () {
   const { chatId, history } = useTdlib()
@@ -13,7 +14,7 @@ export default function MainApp () {
   }
 
   // There are no messages to show
-  if (isEmpty(history)) {
+  if (isEmpty(getMediaMessages(history))) {
     return <EmptyChat />
   }
 

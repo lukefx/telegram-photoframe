@@ -8,7 +8,9 @@ export default function RemoteFile ({ fileId, render }) {
   useEffect(() => {
     let isSubscribed = true
     async function getRemoteFile () {
-      if (!fileId) return
+      if (!fileId) {
+        return
+      }
       const file = await downloadFile(fileId)
       if (isSubscribed) {
         setBlob(URL.createObjectURL(file.data))

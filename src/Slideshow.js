@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
-import { useTdlib } from './Tdlib'
 import { last, isEmpty } from 'lodash'
+import { useTdlib } from './Tdlib'
 import Loading from './Loading'
 import ReactionButton from './ReactionButton'
+import Photo from './components/Photo'
+import Video from './components/Video'
+import { getMediaMessages } from './utility'
 
 const Container = styled.div({
   overflow: 'hidden',
@@ -11,15 +14,6 @@ const Container = styled.div({
   width: 1024,
   cursor: 'none'
 })
-
-const Picture = styled.div(({ blob }) => ({
-  // width: '100%',
-  height: 600,
-  backgroundImage: `url(${blob})`,
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat',
-  backgroundSize: 'cover'
-}))
 
 const Caption = styled.div({
   position: 'relative',
@@ -38,7 +32,8 @@ const Reactions = styled.div({
 })
 
 export default function Slideshow () {
-  const { client, chatId, history, getChatHistory, downloadFile } = useTdlib()
+  console.log('Rendering Slideshow')
+  const { client, chatId, history } = useTdlib()
   const [loading, setLoading] = useState(true)
   const [media, setMedia] = useState()
   const [caption, setCaption] = useState('')
@@ -47,9 +42,7 @@ export default function Slideshow () {
     async function getMediaMessage () {
       setLoading(true)
       // Getting last message with a Photo/Video
-      const mediaMessages = history.filter(message =>
-        ['messagePhoto', 'messageVideo'].includes(message?.content?.['@type'])
-      )
+      const mediaMessages = getMediaMessages(history)
 
       if (isEmpty(mediaMessages)) {
         // we don't have any media in the chat...
@@ -61,20 +54,12 @@ export default function Slideshow () {
         case 'messagePhoto':
           const photo = message.content.photo
           const photoSize = last(photo.sizes)
-          const photoFileId = photoSize.photo.id
-          const localPhotoFile = await downloadFile(photoFileId)
-          const photoSrc = URL.createObjectURL(localPhotoFile.data)
-          setMedia(<Picture data-testid={photoFileId} blob={photoSrc} />)
+          setMedia(<Photo fileId={photoSize.photo.id} />)
           setCaption(message.content?.text)
           break
         case 'messageVideo':
           const video = message.content.video
-          const videoId = video.video.id
-          const localVideoFile = await downloadFile(videoId)
-          const videoSrc = URL.createObjectURL(localVideoFile.data)
-          setMedia(
-            <video data-testid={videoId} src={videoSrc} controls autoPlay />
-          )
+          setMedia(<Video fileId={video.video.id} />)
           setCaption(message.content?.text)
           break
         default:
@@ -84,7 +69,7 @@ export default function Slideshow () {
     }
 
     getMediaMessage()
-  }, [client, history, chatId, getChatHistory, downloadFile])
+  }, [client, history, chatId])
 
   return (
     <Container>

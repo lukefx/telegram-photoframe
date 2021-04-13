@@ -18,6 +18,13 @@ function TelegramProvider (props) {
   const [event, setEvent] = useState()
   const [history, setHistory] = useState([])
 
+  /**
+   * We need to count how many times we called getChatHistory
+   * On the first call it can returns just 1 message
+   * */
+
+  const [historyCalls, setHistoryCalls] = useState(0)
+
   const sendTextMessage = async (chatId, text) => {
     return client.send({
       '@type': 'sendMessage',
@@ -37,8 +44,9 @@ function TelegramProvider (props) {
   const getChats = async (
     offset_order = '9223372036854775807',
     offset_chat_id = 0,
-    limit = 50
+    limit = 20
   ) => {
+    console.log('getChats')
     return client.send({
       '@type': 'getChats',
       chat_list: { '@type': 'chatListMain' },
@@ -49,6 +57,7 @@ function TelegramProvider (props) {
   }
 
   const getChat = async chatId => {
+    console.log('getChat', chatId)
     return client.send({
       '@type': 'getChat',
       chat_id: chatId
@@ -56,6 +65,7 @@ function TelegramProvider (props) {
   }
 
   const downloadFile = async fileId => {
+    console.log('Download file', fileId)
     // downloading the file
     await client.send({
       '@type': 'downloadFile',
@@ -72,27 +82,42 @@ function TelegramProvider (props) {
   }
 
   const getChatHistory = useCallback(
-    (chatId, from_message_id = 0, limit = 100) => {
-      client &&
-        client
-          .send({
-            '@type': 'getChatHistory',
-            chat_id: chatId,
-            limit,
-            from_message_id
-          })
-          .then(newHistory =>
-            setHistory(history =>
-              [...new Set([...newHistory.messages, ...history])].sort(
-                (a, b) => a.date - b.date
-              )
-            )
+    async (chatId, from_message_id = 0, limit = 100) => {
+      console.log('getChatHistory', chatId, from_message_id)
+      if (client) {
+        setHistoryCalls(calls => calls + 1)
+        const newHistory = await client.send({
+          '@type': 'getChatHistory',
+          chat_id: chatId,
+          limit,
+          from_message_id
+        })
+
+        setHistory(history =>
+          [...new Set([...newHistory.messages, ...history])].sort(
+            (a, b) => a.date - b.date
           )
+        )
+      }
     },
     [client]
   )
 
+  useEffect(() => {
+    // We don't have to run this effect if chat is not selected
+    if (!chatId) {
+      return
+    }
+
+    if (history.length === 1 && historyCalls === 1) {
+      console.log('Refreshing history...')
+      const from_id = history[0].id
+      getChatHistory(chatId, from_id)
+    }
+  }, [chatId, history, getChatHistory, historyCalls])
+
   const handleMessages = update => {
+    console.log(update)
     // We can have a new message or one could be deleted
     switch (update['@type']) {
       case 'updateNewMessage':
@@ -149,6 +174,7 @@ function TelegramProvider (props) {
 
   useEffect(() => {
     if (client) {
+      console.log('setTdlibParameters')
       client.send({
         '@type': 'setTdlibParameters',
         parameters: {
@@ -160,40 +186,27 @@ function TelegramProvider (props) {
           device_model: 'Telegram Frame',
           application_version: '0.1',
           use_secret_chats: false,
-          use_message_database: false,
-          use_file_database: false,
+          use_message_database: true,
+          use_file_database: true,
           files_directory: '/'
         }
       })
     }
   }, [client])
 
-  useEffect(() => {
-    async function loadHistory () {
-      await client.send({
-        '@type': 'getChats',
-        chat_list: { '@type': 'chatListMain' },
-        offset_order: '9223372036854775807',
-        offset_chat_id: chatId,
-        limit: 1
-      })
+  const saveChatId = chatId => {
+    chatIdRef.current = chatId
+    setChatId(chatId)
+  }
 
-      // on the first call, tdlib could return just 1 message
-      getChatHistory(chatId)
-    }
-
-    if (client && chatId) {
-      chatIdRef.current = chatId
-      loadHistory()
-    }
-  }, [client, chatId, getChatHistory])
+  console.log('Current history:', history)
 
   return (
     <TelegramContext.Provider
       value={{
         client,
         chatId,
-        setChatId,
+        saveChatId,
         event,
         history,
         getChat,

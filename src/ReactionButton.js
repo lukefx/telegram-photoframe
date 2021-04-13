@@ -15,7 +15,7 @@ const Button = styled.button({
   margin: 5
 })
 
-export default function ReactionButton ({ client, text, children }) {
+export default function ReactionButton ({ text, children }) {
   const { chatId, sendTextMessage } = useTdlib()
   const [playActive] = useSound('/pop-down.mp3', { volume: 0.25 })
   const [playOn] = useSound('/pop-up-on.mp3', { volume: 0.25 })
